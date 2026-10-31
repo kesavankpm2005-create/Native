@@ -19,17 +19,17 @@ export default function AboutPage() {
       {/* Intro */}
       <section className="page-intro">
         <span className="section-kicker">
-          <Leaf size={14} /> {lang === 'ta' ? 'எங்களைப் பற்றி' : 'A LITTLE ABOUT US'}
+          <Leaf size={14} /> {lang === 'ta' ? 'எங்களைப் பற்றி · நம்ம கலசப்பாக்கம்' : 'A LITTLE ABOUT US · NAMMA KALASAPAKKAM'}
         </span>
         <h1>
           {lang === 'ta' ? 'நம்ம ஊர் மளிகை,' : 'Good food.'}
           <br />
-          <em>{lang === 'ta' ? 'உங்கள் வீட்டு வாசலில்!' : 'From our village to your home.'}</em>
+          <em>{lang === 'ta' ? 'இனி உங்கள் வீட்டு வாசலில்!' : 'Kalasapakkam’s Own Village Store.'}</em>
         </h1>
         <p>
           {lang === 'ta'
-            ? 'பாரம்பரிய தமிழ் மண்ணின் மணம் மாறாத தூய அரிசி, பருப்பு, நாட்டு காய்கறிகள் மற்றும் குடும்பங்கள் விரும்பும் அசல் பிராண்டட் பொருட்கள்.'
-            : 'We bring Tamil Nadu’s everyday groceries, authentic Indian brands, and regional farm harvests closer to your family.'}
+            ? 'கலசப்பாக்கம் மெயின் ரோடு அங்காடியிலிருந்து — பாரம்பரிய மண் மணம் மாறாத தூய அரிசி, பருப்பு, நாட்டு காய்கறிகள் மற்றும் அசல் பிராண்டட் மளிகைப் பொருட்கள் கலசப்பாக்கம் மற்றும் அனுமதிக்கப்பட்ட கிராமங்களுக்கு நேரடியாக வந்து சேரும்.'
+            : 'Rooted on Kalasapakkam Main Road, Tiruvannamalai District. We deliver genuine branded groceries, authentic staples, and regional farm harvests directly to households across Kalasapakkam and approved surrounding villages.'}
         </p>
       </section>
 

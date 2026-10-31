@@ -254,8 +254,14 @@
   display: grid;
   place-items: center;
   color: #FFFFFF;
-  background: linear-gradient(135deg, var(--primary), #327546);
-  box-shadow: 0 4px 10px rgba(36, 92, 53, 0.22);
+  background: transparent;
+  box-shadow: none;
+  filter: drop-shadow(0 4px 10px rgba(36, 92, 53, 0.22));
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.brand:hover .brand-mark {
+  transform: scale(1.06);
+  filter: drop-shadow(0 6px 14px rgba(36, 92, 53, 0.32));
 }
 
 .brand-titles {

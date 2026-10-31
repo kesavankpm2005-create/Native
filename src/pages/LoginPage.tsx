@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import type { Session } from '@supabase/supabase-js'
-import { ArrowRight, Leaf, LockKeyhole, LogOut, Mail, UserRound } from 'lucide-react'
+import { ArrowRight, LockKeyhole, LogOut, Mail, UserRound } from 'lucide-react'
+import { NativeGroceryIcon } from '../components'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useI18n } from '../i18n'
@@ -131,7 +132,7 @@ export default function LoginPage() {
     <div className="inner-page login-page">
       <section className="login-layout">
         <div className="login-aside">
-          <span className="login-leaf"><Leaf size={24} /></span>
+          <span className="login-leaf"><NativeGroceryIcon size={40} /></span>
           <span className="section-kicker">{lang === 'ta' ? 'நேட்டிவ் மளிகை கணக்கு' : 'A NOTE FOR OUR NEIGHBORS'}</span>
           <h1>{lang === 'ta' ? 'நம்ம ஊர் மளிகை.' : 'Your groceries.'}<br />{lang === 'ta' ? 'உங்கள்' : 'Your'} <em>{lang === 'ta' ? 'கணக்கு.' : 'account.'}</em></h1>
           <p>{lang === 'ta' ? 'மளிகைப் பொருட்களை விரைவாக ஆர்டர் செய்யவும், சிறப்பு சலுகைகளைப் பெறவும் உங்கள் கணக்கில் உள்நுழையவும்.' : 'Create an account to keep your customer ID and receive fresh updates from Native Groceries.'}</p>

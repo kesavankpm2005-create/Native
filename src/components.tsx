@@ -5,7 +5,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Home,
-  Leaf,
+
   MapPin,
   Menu,
   MessageCircle,
@@ -31,6 +31,90 @@ import {
 } from './productData'
 import { useI18n } from './i18n'
 import { tamilNaduLocations, translateCategory, type FontSize } from './i18nData'
+
+export function NativeGroceryIcon({
+  size = 40,
+  className = '',
+  title = 'Native Groceries',
+}: {
+  size?: number | string
+  className?: string
+  title?: string
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 64 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      role="img"
+      aria-label={title}
+    >
+      <defs>
+        <linearGradient id="ngSvgBg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#28683D" />
+          <stop offset="100%" stopColor="#143B20" />
+        </linearGradient>
+        <linearGradient id="ngSvgLeaf" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#4E8C34" />
+          <stop offset="100%" stopColor="#7EC049" />
+        </linearGradient>
+        <linearGradient id="ngSvgGold" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#F5CE68" />
+          <stop offset="100%" stopColor="#D49925" />
+        </linearGradient>
+      </defs>
+
+      {/* Squircle Base Badge in Forest Green with Warm Gold Rim */}
+      <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#ngSvgBg)" />
+      <rect x="2" y="2" width="60" height="60" rx="16" stroke="#E8B84A" strokeOpacity="0.45" strokeWidth="1.5" />
+
+      {/* Grocery Bag / Basket Arch base contour */}
+      <path
+        d="M19 45.5C21 49 26 51 32 51C38 51 43 49 45 45.5"
+        stroke="#FFFFFF"
+        strokeOpacity="0.9"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+
+      {/* Sprout Secondary Leaf (Left) */}
+      <path
+        d="M31 38C22 36 17 27 18 19C26 20 29 29 31 38Z"
+        fill="#9DD866"
+      />
+      <path
+        d="M31 38C27 30 23 25 18 19"
+        stroke="#EBF8D8"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+
+      {/* Main Fresh Leaf (Right) */}
+      <path
+        d="M32 46C30 36 34 22 47 16C47 28 42 41 32 46Z"
+        fill="url(#ngSvgLeaf)"
+      />
+      {/* Leaf Central Vein */}
+      <path
+        d="M32 46C34.5 35 39 26 47 16"
+        stroke="#FFFFFF"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+
+      {/* Turmeric Gold Harvest Sun / Organic Seed Crown */}
+      <circle cx="45" cy="14" r="3.5" fill="url(#ngSvgGold)" />
+      <circle cx="45" cy="14" r="1.5" fill="#FFF8DE" />
+
+      {/* Small Village Golden Sparkle */}
+      <circle cx="19" cy="17" r="1.5" fill="#F5CE68" opacity="0.9" />
+    </svg>
+  )
+}
+
 
 export function SiteHeader({ cartCount }: { cartCount: number }) {
   const { lang, setLang, fontSize, setFontSize, location, setLocation, t } = useI18n()
@@ -62,7 +146,7 @@ export function SiteHeader({ cartCount }: { cartCount: number }) {
           <div className="header-top-inner">
             <div className="header-top-left">
               <span className="village-badge">
-                <Leaf size={13} /> {t.tagline}
+                <MapPin size={13} /> {t.locationBadge}
               </span>
 
               {/* Location Selector */}
@@ -84,7 +168,7 @@ export function SiteHeader({ cartCount }: { cartCount: number }) {
                 {locationOpen && (
                   <div className="location-dropdown" role="menu">
                     <div className="location-dropdown-header">
-                      <strong>{lang === 'ta' ? 'டெலிவரி செய்யும் ஊர்' : 'Choose Delivery Town'}</strong>
+                      <strong>{lang === 'ta' ? 'டெலிவரி கிராமம் (கலசப்பாக்கம் & சுற்றுவட்டம்)' : 'Kalasapakkam Delivery Villages'}</strong>
                     </div>
                     {tamilNaduLocations.map((loc) => (
                       <button
@@ -163,13 +247,13 @@ export function SiteHeader({ cartCount }: { cartCount: number }) {
             onClick={() => setMenuOpen(false)}
           >
             <span className="brand-mark">
-              <Leaf size={22} strokeWidth={2.4} />
+              <NativeGroceryIcon size={44} />
             </span>
             <div className="brand-titles">
               <span className="brand-name">
                 Native Groceries<span>.</span>
               </span>
-              <span className="brand-tamil-subtitle">நம்ம ஊர் மளிகை</span>
+              <span className="brand-tamil-subtitle">{lang === 'ta' ? 'நம்ம கலசப்பாக்கம்' : 'Namma Kalasapakkam'}</span>
             </div>
           </Link>
 
@@ -450,13 +534,13 @@ export function SiteFooter() {
         <div className="footer-brand-block">
           <Link className="brand footer-brand" to="/">
             <span className="brand-mark">
-              <Leaf size={20} />
+              <NativeGroceryIcon size={40} />
             </span>
             <div className="brand-titles">
               <span className="brand-name">
                 Native Groceries<span>.</span>
               </span>
-              <span className="brand-tamil-subtitle">நம்ம ஊர் மளிகை</span>
+              <span className="brand-tamil-subtitle">{lang === 'ta' ? 'நம்ம கலசப்பாக்கம்' : 'Namma Kalasapakkam'}</span>
             </div>
           </Link>
           <p>
@@ -465,8 +549,8 @@ export function SiteFooter() {
               : 'From our village to your home. Authentic Indian branded groceries & fresh harvests delivered with care.'}
           </p>
           <div className="footer-villages-served">
-            <strong>{lang === 'ta' ? 'விநியோக மாவட்டங்கள்:' : 'Delivery Coverage:'}</strong>
-            <span>திருவண்ணாமலை · தஞ்சாவூர் · மதுரை · கோவை · சேலம் · திருச்சி · சென்னை · நெல்லை · நீலகிரி</span>
+            <strong>{lang === 'ta' ? 'அங்கீகரிக்கப்பட்ட டெலிவரி கிராமங்கள்:' : 'Approved Delivery Villages:'}</strong>
+            <span>கலசப்பாக்கம் · படவேடு · ஆடமங்கலம் · கடலாடி · மேல்சோழந்திபுரம் · தென்பள்ளிப்பட்டு · பூண்டி · செங்கபுத்தூர் · மோட்டூர் · போளூர் ரோடு</span>
           </div>
         </div>
 
@@ -516,6 +600,7 @@ export function SiteFooter() {
             : 'Locally rooted. Thoughtfully stocked.'}
         </span>
         <Link to="/contact">{lang === 'ta' ? 'உதவி தேவைப்படுகிறதா?' : 'Need Help?'}</Link>
+        <Link to="/admin" style={{ opacity: 0.65, fontSize: '0.82rem' }}>⚙️ {lang === 'ta' ? 'நிர்வாகம்' : 'Store Admin'}</Link>
       </div>
     </footer>
   )
@@ -529,8 +614,16 @@ export function ProductCard(props: ProductCardProps) {
   const { product } = props
   const { lang, t } = useI18n()
   const [quantity, setQuantity] = useState(1)
-  const [imgSrc, setImgSrc] = useState(productImage(product))
+  const [hasImageError, setHasImageError] = useState(false)
+  const [prevProductSku, setPrevProductSku] = useState(product.sku)
   const [isAdded, setIsAdded] = useState(false)
+
+  if (prevProductSku !== product.sku) {
+    setPrevProductSku(product.sku)
+    setHasImageError(false)
+  }
+
+  const imgSrc = hasImageError ? '/images/products/TN-RC-001.jpg' : productImage(product)
 
   const brand = productBrand(product)
   const displayName = productDisplayName(product, lang)
@@ -560,8 +653,9 @@ export function ProductCard(props: ProductCardProps) {
           alt={product.name}
           loading="lazy"
           onError={() => {
-            // Graceful fallback to category image or default
-            setImgSrc('/images/products/TN-RC-001.jpg')
+
+
+            setHasImageError(true)
           }}
         />
 
@@ -732,7 +826,7 @@ export function FloatingWhatsAppButton() {
   return (
     <aside aria-label="Customer WhatsApp assistance">
       <a
-        href="https://wa.me/919655082236?text=Vanakkam%20Native%20Groceries%2C%20I%20need%20help%20ordering%20groceries"
+        href="https://wa.me/919655082236?text=Vanakkam%20Native%20Groceries%2C%20Kalasapakkam%2C%20I%20want%20to%20order%20groceries"
         target="_blank"
         rel="noreferrer"
         className="floating-whatsapp-btn"
@@ -742,8 +836,8 @@ export function FloatingWhatsAppButton() {
           <MessageCircle size={24} />
         </span>
         <span className="wa-btn-text">
-          <strong>{lang === 'ta' ? 'வாட்ஸ்அப் உதவி' : 'WhatsApp Order'}</strong>
-          <small>{lang === 'ta' ? 'நேரடி ஆர்டர்' : 'Click to chat'}</small>
+          <strong>{lang === 'ta' ? 'கலசப்பாக்கம் வாட்ஸ்அப்' : 'Kalasapakkam WhatsApp'}</strong>
+          <small>{lang === 'ta' ? 'நேரடி ஆர்டர் உதவி' : 'Direct Order'}</small>
         </span>
       </a>
     </aside>

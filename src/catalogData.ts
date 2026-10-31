@@ -1,0 +1,886 @@
+import type { Product, ProductPage } from './productData'
+
+export const localProductsCatalog: Product[] = [
+  {
+    "name": "Ponni boiled rice",
+    "sku": "TN-RC-001",
+    "category": "Rice & Grains",
+    "supplier": "Cauvery Delta Growers",
+    "stock": 34,
+    "unit": "5 kg",
+    "price": 380,
+    "id": "850928e6-b3a9-4cd6-a882-94f071babfcd",
+    "image": "/images/products/TN-RC-001.jpg"
+  },
+  {
+    "name": "Idli rice",
+    "sku": "TN-RC-002",
+    "category": "Rice & Grains",
+    "supplier": "Thanjavur Farm Collective",
+    "stock": 26,
+    "unit": "5 kg",
+    "price": 320,
+    "id": "05118cd2-be60-45b7-be75-96b7df0698bd",
+    "image": "/images/products/TN-RC-002.jpg"
+  },
+  {
+    "name": "Dosa rice",
+    "sku": "TN-RC-003",
+    "category": "Rice & Grains",
+    "supplier": "Thanjavur Farm Collective",
+    "stock": 22,
+    "unit": "5 kg",
+    "price": 340,
+    "id": "511e93c4-cb6b-4eaf-a949-be8fccf698cb",
+    "image": "/images/products/TN-RC-003.jpg"
+  },
+  {
+    "name": "Seeraga samba rice",
+    "sku": "TN-RC-004",
+    "category": "Rice & Grains",
+    "supplier": "Dindigul Harvest",
+    "stock": 18,
+    "unit": "1 kg",
+    "price": 165,
+    "id": "3a83fc45-05ea-496d-b166-239f1712f550",
+    "image": "/images/products/TN-RC-004.jpg"
+  },
+  {
+    "name": "Red rice",
+    "sku": "TN-RC-005",
+    "category": "Rice & Grains",
+    "supplier": "Cauvery Delta Growers",
+    "stock": 28,
+    "unit": "1 kg",
+    "price": 142,
+    "id": "55623458-84db-45f8-b1ff-e1dee846fd4e",
+    "image": "/images/products/TN-RC-005.jpg"
+  },
+  {
+    "name": "Raw rice",
+    "sku": "TN-RC-006",
+    "category": "Rice & Grains",
+    "supplier": "Thanjavur Farm Collective",
+    "stock": 19,
+    "unit": "1 kg",
+    "price": 74,
+    "id": "4257f12b-2dde-4f29-a9c6-7206d628e948",
+    "image": "/images/products/TN-RC-006.jpg"
+  },
+  {
+    "name": "Whole wheat atta",
+    "sku": "TN-WF-001",
+    "category": "Wheat & Flours",
+    "supplier": "Salem Grain Mill",
+    "stock": 31,
+    "unit": "5 kg",
+    "price": 265,
+    "id": "5e85148d-9f45-4c88-9fa8-ae38142497cc",
+    "image": "/images/products/TN-WF-001.jpg"
+  },
+  {
+    "name": "Whole wheat berries",
+    "sku": "TN-WF-002",
+    "category": "Wheat & Flours",
+    "supplier": "Salem Grain Mill",
+    "stock": 24,
+    "unit": "1 kg",
+    "price": 82,
+    "id": "0c29a3ed-81c4-4235-9e4d-853dd8b13a78",
+    "image": "/images/products/TN-WF-002.jpg"
+  },
+  {
+    "name": "Wheat flour",
+    "sku": "TN-WF-003",
+    "category": "Wheat & Flours",
+    "supplier": "Coimbatore Flour Mill",
+    "stock": 27,
+    "unit": "1 kg",
+    "price": 68,
+    "id": "ac7d2e54-f0a3-48a9-ba1c-2ba6c7053b9a",
+    "image": "/images/products/TN-WF-003.jpg"
+  },
+  {
+    "name": "Ragi flour",
+    "sku": "TN-WF-004",
+    "category": "Wheat & Flours",
+    "supplier": "Salem Millet Collective",
+    "stock": 28,
+    "unit": "500 g",
+    "price": 58,
+    "id": "4d12e072-8c23-4165-ac69-e204fbb876b8",
+    "image": "/images/products/TN-WF-004.jpg"
+  },
+  {
+    "name": "Kambu flour",
+    "sku": "TN-WF-005",
+    "category": "Wheat & Flours",
+    "supplier": "Salem Millet Collective",
+    "stock": 19,
+    "unit": "500 g",
+    "price": 62,
+    "id": "c2db06c8-fca7-4a8c-b9d2-e319151688c2",
+    "image": "/images/products/TN-WF-005.jpg"
+  },
+  {
+    "name": "Cholam flour",
+    "sku": "TN-WF-006",
+    "category": "Wheat & Flours",
+    "supplier": "Salem Millet Collective",
+    "stock": 21,
+    "unit": "500 g",
+    "price": 66,
+    "id": "cc21fd54-ee7e-4fcf-b197-28084eada0f0",
+    "image": "/images/products/TN-WF-006.jpg"
+  },
+  {
+    "name": "Dark chocolate bar",
+    "sku": "TN-CH-001",
+    "category": "Chocolate",
+    "supplier": "Native Pantry",
+    "stock": 24,
+    "unit": "100 g",
+    "price": 120,
+    "id": "d0500000-0000-4000-8000-000000000001",
+    "image": "/images/products/TN-CH-001.jpg"
+  },
+  {
+    "name": "Milk chocolate bar",
+    "sku": "TN-CH-002",
+    "category": "Chocolate",
+    "supplier": "Native Pantry",
+    "stock": 28,
+    "unit": "100 g",
+    "price": 110,
+    "id": "d0500000-0000-4000-8000-000000000002",
+    "image": "/images/products/TN-CH-002.jpg"
+  },
+  {
+    "name": "Chocolate chips",
+    "sku": "TN-CH-003",
+    "category": "Chocolate",
+    "supplier": "Native Pantry",
+    "stock": 18,
+    "unit": "200 g",
+    "price": 185,
+    "id": "d0500000-0000-4000-8000-000000000003",
+    "image": "/images/products/TN-CH-003.jpg"
+  },
+  {
+    "name": "Cocoa powder",
+    "sku": "TN-CH-004",
+    "category": "Chocolate",
+    "supplier": "Native Pantry",
+    "stock": 20,
+    "unit": "100 g",
+    "price": 95,
+    "id": "d0500000-0000-4000-8000-000000000004",
+    "image": "/images/products/TN-CH-004.jpg"
+  },
+  {
+    "name": "Cadbury Dairy Milk chocolate",
+    "sku": "TN-CH-005",
+    "category": "Chocolate",
+    "supplier": "Native Grocery Market",
+    "stock": 30,
+    "unit": "100 g",
+    "price": 100,
+    "id": "d0500000-0000-4000-8000-000000000020",
+    "image": "/images/products/TN-CH-005.jpg"
+  },
+  {
+    "name": "Nestle Milkybar white chocolate",
+    "sku": "TN-CH-006",
+    "category": "Chocolate",
+    "supplier": "Native Grocery Market",
+    "stock": 26,
+    "unit": "100 g",
+    "price": 90,
+    "id": "d0500000-0000-4000-8000-000000000021",
+    "image": "/images/products/TN-CH-006.jpg"
+  },
+  {
+    "name": "KitKat chocolate",
+    "sku": "TN-CH-007",
+    "category": "Chocolate",
+    "supplier": "Native Grocery Market",
+    "stock": 32,
+    "unit": "pack",
+    "price": 40,
+    "id": "d0500000-0000-4000-8000-000000000022",
+    "image": "/images/products/TN-CH-007.jpg"
+  },
+  {
+    "name": "Cadbury 5 Star chocolate",
+    "sku": "TN-CH-008",
+    "category": "Chocolate",
+    "supplier": "Native Grocery Market",
+    "stock": 28,
+    "unit": "pack",
+    "price": 30,
+    "id": "d0500000-0000-4000-8000-000000000023",
+    "image": "/images/products/TN-CH-008.jpg"
+  },
+  {
+    "name": "Nestle Munch chocolate",
+    "sku": "TN-CH-009",
+    "category": "Chocolate",
+    "supplier": "Native Grocery Market",
+    "stock": 28,
+    "unit": "pack",
+    "price": 25,
+    "id": "d0500000-0000-4000-8000-000000000024",
+    "image": "/images/products/TN-CH-009.jpg"
+  },
+  {
+    "name": "Marie Biscuits",
+    "sku": "TN-BI-001",
+    "category": "Biscuits",
+    "supplier": "Native Grocery Market",
+    "stock": 32,
+    "unit": "200 g",
+    "price": 35,
+    "id": "d0500000-0000-4000-8000-000000000032",
+    "image": "/images/products/TN-BI-001.jpg"
+  },
+  {
+    "name": "Digestive Biscuits",
+    "sku": "TN-BI-002",
+    "category": "Biscuits",
+    "supplier": "Native Grocery Market",
+    "stock": 23,
+    "unit": "250 g",
+    "price": 65,
+    "id": "d0500000-0000-4000-8000-000000000033",
+    "image": "/images/products/TN-BI-002.jpg"
+  },
+  {
+    "name": "Assorted Crackers",
+    "sku": "TN-BI-003",
+    "category": "Biscuits",
+    "supplier": "Native Grocery Market",
+    "stock": 20,
+    "unit": "200 g",
+    "price": 55,
+    "id": "d0500000-0000-4000-8000-000000000034",
+    "image": "/images/products/TN-BI-003.jpg"
+  },
+  {
+    "name": "Chocolate Chip Cookies",
+    "sku": "TN-CO-001",
+    "category": "Cookies",
+    "supplier": "Native Bakery",
+    "stock": 22,
+    "unit": "200 g",
+    "price": 95,
+    "id": "d0500000-0000-4000-8000-000000000035",
+    "image": "/images/products/TN-CO-001.jpg"
+  },
+  {
+    "name": "Butter Cookies",
+    "sku": "TN-CO-002",
+    "category": "Cookies",
+    "supplier": "Native Bakery",
+    "stock": 19,
+    "unit": "200 g",
+    "price": 85,
+    "id": "d0500000-0000-4000-8000-000000000036",
+    "image": "/images/products/TN-CO-002.jpg"
+  },
+  {
+    "name": "Assorted Cookies",
+    "sku": "TN-CO-003",
+    "category": "Cookies",
+    "supplier": "Native Bakery",
+    "stock": 18,
+    "unit": "250 g",
+    "price": 120,
+    "id": "d0500000-0000-4000-8000-000000000037",
+    "image": "/images/products/TN-CO-003.jpg"
+  },
+  {
+    "name": "Filter coffee powder",
+    "sku": "TN-BV-001",
+    "category": "Beverages",
+    "supplier": "Coimbatore Coffee Works",
+    "stock": 30,
+    "unit": "250 g",
+    "price": 145,
+    "id": "d0500000-0000-4000-8000-000000000005",
+    "image": "/images/products/TN-BV-001.jpg"
+  },
+  {
+    "name": "Herbal tea",
+    "sku": "TN-BV-002",
+    "category": "Beverages",
+    "supplier": "Nilgiri Tea Collective",
+    "stock": 25,
+    "unit": "100 g",
+    "price": 125,
+    "id": "d0500000-0000-4000-8000-000000000006",
+    "image": "/images/products/TN-BV-002.jpg"
+  },
+  {
+    "name": "Coca-Cola soft drink",
+    "sku": "TN-BV-003",
+    "category": "Beverages",
+    "supplier": "Native Grocery Market",
+    "stock": 36,
+    "unit": "750 ml",
+    "price": 45,
+    "id": "d0500000-0000-4000-8000-000000000025",
+    "image": "/images/products/TN-BV-003.jpg"
+  },
+  {
+    "name": "Pepsi soft drink",
+    "sku": "TN-BV-004",
+    "category": "Beverages",
+    "supplier": "Native Grocery Market",
+    "stock": 32,
+    "unit": "750 ml",
+    "price": 45,
+    "id": "d0500000-0000-4000-8000-000000000026",
+    "image": "/images/products/TN-BV-004.jpg"
+  },
+  {
+    "name": "Maa Mango drink",
+    "sku": "TN-BV-005",
+    "category": "Beverages",
+    "supplier": "Native Grocery Market",
+    "stock": 24,
+    "unit": "600 ml",
+    "price": 40,
+    "id": "d0500000-0000-4000-8000-000000000027",
+    "image": "/images/products/TN-BV-005.jpg"
+  },
+  {
+    "name": "Maaza mango drink",
+    "sku": "TN-BV-006",
+    "category": "Beverages",
+    "supplier": "Native Grocery Market",
+    "stock": 28,
+    "unit": "600 ml",
+    "price": 40,
+    "id": "d0500000-0000-4000-8000-000000000028",
+    "image": "/images/products/TN-BV-006.jpg"
+  },
+  {
+    "name": "Slice mango drink",
+    "sku": "TN-BV-007",
+    "category": "Beverages",
+    "supplier": "Native Grocery Market",
+    "stock": 25,
+    "unit": "600 ml",
+    "price": 40,
+    "id": "d0500000-0000-4000-8000-000000000029",
+    "image": "/images/products/TN-BV-007.jpg"
+  },
+  {
+    "name": "Dishwash liquid",
+    "sku": "TN-HC-001",
+    "category": "Home Care",
+    "supplier": "Native Home Essentials",
+    "stock": 24,
+    "unit": "500 ml",
+    "price": 95,
+    "id": "d0500000-0000-4000-8000-000000000007",
+    "image": "/images/products/TN-HC-001.jpg"
+  },
+  {
+    "name": "Laundry detergent",
+    "sku": "TN-HC-002",
+    "category": "Home Care",
+    "supplier": "Native Home Essentials",
+    "stock": 19,
+    "unit": "1 kg",
+    "price": 145,
+    "id": "d0500000-0000-4000-8000-000000000008",
+    "image": "/images/products/TN-HC-002.jpg"
+  },
+  {
+    "name": "Bathing soap",
+    "sku": "TN-TL-001",
+    "category": "Toiletries",
+    "supplier": "Native Daily Care",
+    "stock": 36,
+    "unit": "100 g",
+    "price": 45,
+    "id": "d0500000-0000-4000-8000-000000000009",
+    "image": "/images/products/TN-TL-001.jpg"
+  },
+  {
+    "name": "Toothpaste",
+    "sku": "TN-TL-002",
+    "category": "Toiletries",
+    "supplier": "Native Daily Care",
+    "stock": 22,
+    "unit": "150 g",
+    "price": 85,
+    "id": "d0500000-0000-4000-8000-000000000010",
+    "image": "/images/products/TN-TL-002.jpg"
+  },
+  {
+    "name": "Clinic Plus shampoo",
+    "sku": "TN-TL-003",
+    "category": "Toiletries",
+    "supplier": "Native Daily Care",
+    "stock": 20,
+    "unit": "340 ml",
+    "price": 190,
+    "id": "d0500000-0000-4000-8000-000000000030",
+    "image": "/images/products/TN-TL-003.jpg"
+  },
+  {
+    "name": "Head & Shoulders shampoo",
+    "sku": "TN-TL-004",
+    "category": "Toiletries",
+    "supplier": "Native Daily Care",
+    "stock": 18,
+    "unit": "340 ml",
+    "price": 260,
+    "id": "d0500000-0000-4000-8000-000000000031",
+    "image": "/images/products/TN-TL-004.jpg"
+  },
+  {
+    "name": "Coconut hair oil",
+    "sku": "TN-BP-001",
+    "category": "Beauty Products",
+    "supplier": "Native Beauty Care",
+    "stock": 20,
+    "unit": "200 ml",
+    "price": 135,
+    "id": "d0500000-0000-4000-8000-000000000011",
+    "image": "/images/products/TN-BP-001.jpg"
+  },
+  {
+    "name": "Aloe vera gel",
+    "sku": "TN-BP-002",
+    "category": "Beauty Products",
+    "supplier": "Native Beauty Care",
+    "stock": 18,
+    "unit": "100 g",
+    "price": 115,
+    "id": "d0500000-0000-4000-8000-000000000012",
+    "image": "/images/products/TN-BP-002.jpg"
+  },
+  {
+    "name": "Fresh cow milk",
+    "sku": "TN-DA-001",
+    "category": "Dairy Products",
+    "supplier": "Thiruvannamalai Dairy Farm",
+    "stock": 30,
+    "unit": "1 L",
+    "price": 60,
+    "id": "d0500000-0000-4000-8000-000000000013",
+    "image": "/images/products/TN-DA-001.jpg"
+  },
+  {
+    "name": "Thick curd",
+    "sku": "TN-DA-002",
+    "category": "Dairy Products",
+    "supplier": "Thiruvannamalai Dairy Farm",
+    "stock": 24,
+    "unit": "500 g",
+    "price": 50,
+    "id": "d0500000-0000-4000-8000-000000000014",
+    "image": "/images/products/TN-DA-002.jpg"
+  },
+  {
+    "name": "Fresh buttermilk",
+    "sku": "TN-DA-003",
+    "category": "Dairy Products",
+    "supplier": "Thiruvannamalai Dairy Farm",
+    "stock": 24,
+    "unit": "500 ml",
+    "price": 30,
+    "id": "d0500000-0000-4000-8000-000000000015",
+    "image": "/images/products/TN-DA-003.jpg"
+  },
+  {
+    "name": "Cheddar cheese",
+    "sku": "TN-DA-004",
+    "category": "Dairy Products",
+    "supplier": "Native Dairy",
+    "stock": 16,
+    "unit": "200 g",
+    "price": 180,
+    "id": "d0500000-0000-4000-8000-000000000016",
+    "image": "/images/products/TN-DA-004.jpg"
+  },
+  {
+    "name": "Salted butter",
+    "sku": "TN-DA-005",
+    "category": "Dairy Products",
+    "supplier": "Native Dairy",
+    "stock": 18,
+    "unit": "100 g",
+    "price": 60,
+    "id": "d0500000-0000-4000-8000-000000000017",
+    "image": "/images/products/TN-DA-005.jpg"
+  },
+  {
+    "name": "Fresh paneer",
+    "sku": "TN-DA-006",
+    "category": "Dairy Products",
+    "supplier": "Thiruvannamalai Dairy Farm",
+    "stock": 15,
+    "unit": "200 g",
+    "price": 90,
+    "id": "d0500000-0000-4000-8000-000000000018",
+    "image": "/images/products/TN-DA-006.jpg"
+  },
+  {
+    "name": "Pure cow ghee",
+    "sku": "TN-DA-007",
+    "category": "Dairy Products",
+    "supplier": "Thiruvannamalai Dairy Farm",
+    "stock": 12,
+    "unit": "200 ml",
+    "price": 220,
+    "id": "d0500000-0000-4000-8000-000000000019",
+    "image": "/images/products/TN-DA-007.jpg"
+  },
+  {
+    "name": "Murungai keerai",
+    "sku": "TN-LG-001",
+    "category": "Leafy Greens",
+    "supplier": "Madurai Market Garden",
+    "stock": 17,
+    "unit": "bunch",
+    "price": 30,
+    "id": "ff52bae1-1ed9-4cc3-b258-b8c2a66d5e27",
+    "image": "/images/products/TN-LG-001.jpg"
+  },
+  {
+    "name": "Arai keerai",
+    "sku": "TN-LG-002",
+    "category": "Leafy Greens",
+    "supplier": "Kanchipuram Greens",
+    "stock": 21,
+    "unit": "bunch",
+    "price": 25,
+    "id": "4ef54a19-f687-4434-b41d-9d412024585b",
+    "image": "/images/products/TN-LG-002.jpg"
+  },
+  {
+    "name": "Siru keerai",
+    "sku": "TN-LG-003",
+    "category": "Leafy Greens",
+    "supplier": "Kanchipuram Greens",
+    "stock": 20,
+    "unit": "bunch",
+    "price": 25,
+    "id": "68e368e0-18ff-4063-a503-1f811a08eff5",
+    "image": "/images/products/TN-LG-003.jpg"
+  },
+  {
+    "name": "Fresh spinach",
+    "sku": "TN-LG-004",
+    "category": "Leafy Greens",
+    "supplier": "Nilgiri Leaf Farms",
+    "stock": 28,
+    "unit": "250 g",
+    "price": 32,
+    "id": "7a993909-f361-4770-992c-0cb95e3850a0",
+    "image": "/images/products/TN-LG-004.jpg"
+  },
+  {
+    "name": "Fresh curry leaves",
+    "sku": "TN-LG-005",
+    "category": "Leafy Greens",
+    "supplier": "Kanchipuram Greens",
+    "stock": 45,
+    "unit": "bunch",
+    "price": 20,
+    "id": "955a18cf-af43-4c27-b68a-2f680e7a0e50",
+    "image": "/images/products/TN-LG-005.jpg"
+  },
+  {
+    "name": "Poovan bananas",
+    "sku": "TN-FR-001",
+    "category": "Fruits",
+    "supplier": "Pollachi Fruit Growers",
+    "stock": 32,
+    "unit": "bunch",
+    "price": 48,
+    "id": "9f81e935-d4ca-46f8-ac53-b9d3b33e132c",
+    "image": "/images/products/TN-FR-001.jpg"
+  },
+  {
+    "name": "Salem mangoes",
+    "sku": "TN-FR-002",
+    "category": "Fruits",
+    "supplier": "Salem Orchard Collective",
+    "stock": 18,
+    "unit": "kg",
+    "price": 110,
+    "id": "647578fc-c7ab-4c65-a674-3d6d4105e455",
+    "image": "/images/products/TN-FR-002.jpg"
+  },
+  {
+    "name": "Guava",
+    "sku": "TN-FR-003",
+    "category": "Fruits",
+    "supplier": "Madurai Market Garden",
+    "stock": 22,
+    "unit": "kg",
+    "price": 72,
+    "id": "26e254d2-a2f4-4d3e-a1c2-2a29fa93a001",
+    "image": "/images/products/TN-FR-003.jpg"
+  },
+  {
+    "name": "Papaya",
+    "sku": "TN-FR-004",
+    "category": "Fruits",
+    "supplier": "Pollachi Fruit Growers",
+    "stock": 16,
+    "unit": "each",
+    "price": 55,
+    "id": "91d0ff09-e32e-4930-81d1-e1ea3d79e022",
+    "image": "/images/products/TN-FR-004.jpg"
+  },
+  {
+    "name": "Sweet lime",
+    "sku": "TN-FR-005",
+    "category": "Fruits",
+    "supplier": "Dindigul Orchard",
+    "stock": 19,
+    "unit": "kg",
+    "price": 85,
+    "id": "ad9b9e39-bdf7-43ce-b0a2-01673b75bfd9",
+    "image": "/images/products/TN-FR-005.jpg"
+  },
+  {
+    "name": "Tender coconut",
+    "sku": "TN-FR-006",
+    "category": "Fruits",
+    "supplier": "Pollachi Coconut Co-op",
+    "stock": 32,
+    "unit": "each",
+    "price": 48,
+    "id": "8bc899ee-902b-4463-ac6d-4e3902613094",
+    "image": "/images/products/TN-FR-006.jpg"
+  },
+  {
+    "name": "Jackfruit bulbs",
+    "sku": "TN-FR-007",
+    "category": "Fruits",
+    "supplier": "Cuddalore Orchard Collective",
+    "stock": 14,
+    "unit": "250 g",
+    "price": 85,
+    "id": "b8b9688e-040f-4add-8126-0c453da7f2ce",
+    "image": "/images/products/TN-FR-007.jpg"
+  },
+  {
+    "name": "Farm tomatoes",
+    "sku": "TN-VG-001",
+    "category": "Vegetables",
+    "supplier": "Kanchipuram Greens",
+    "stock": 42,
+    "unit": "kg",
+    "price": 38,
+    "id": "7523e467-4186-434b-a18f-218508391232",
+    "image": "/images/products/TN-VG-001.jpg"
+  },
+  {
+    "name": "Small onions",
+    "sku": "TN-VG-002",
+    "category": "Vegetables",
+    "supplier": "Perambalur Farmers",
+    "stock": 23,
+    "unit": "500 g",
+    "price": 70,
+    "id": "572579c4-568d-49bf-8f0c-f511fa2fa34d",
+    "image": "/images/products/TN-VG-002.jpg"
+  },
+  {
+    "name": "Purple brinjal",
+    "sku": "TN-VG-003",
+    "category": "Vegetables",
+    "supplier": "Madurai Market Garden",
+    "stock": 20,
+    "unit": "500 g",
+    "price": 38,
+    "id": "bc1c0226-fc4b-4dfa-a25f-ff1d59388d98",
+    "image": "/images/products/TN-VG-003.jpg"
+  },
+  {
+    "name": "Fresh okra",
+    "sku": "TN-VG-004",
+    "category": "Vegetables",
+    "supplier": "Kanchipuram Greens",
+    "stock": 18,
+    "unit": "500 g",
+    "price": 35,
+    "id": "8e32eb7b-04ed-4d0d-b50f-2eb525b5f664",
+    "image": "/images/products/TN-VG-004.jpg"
+  },
+  {
+    "name": "Drumstick (murungakkai)",
+    "sku": "TN-VG-005",
+    "category": "Vegetables",
+    "supplier": "Madurai Market Garden",
+    "stock": 17,
+    "unit": "250 g",
+    "price": 40,
+    "id": "14f434bf-9634-41c1-a7e2-ad77d2c445cc",
+    "image": "/images/products/TN-VG-005.jpg"
+  },
+  {
+    "name": "Carrots",
+    "sku": "TN-VG-006",
+    "category": "Vegetables",
+    "supplier": "Ooty Vegetable Farms",
+    "stock": 23,
+    "unit": "500 g",
+    "price": 36,
+    "id": "433c6db7-f7ca-4d90-9cb4-462ea5785319",
+    "image": "/images/products/TN-VG-006.jpg"
+  },
+  {
+    "name": "Potatoes",
+    "sku": "TN-VG-007",
+    "category": "Vegetables",
+    "supplier": "Ooty Vegetable Farms",
+    "stock": 33,
+    "unit": "1 kg",
+    "price": 46,
+    "id": "09e6394c-d697-4319-9b57-8ab04360047f",
+    "image": "/images/products/TN-VG-007.jpg"
+  },
+  {
+    "name": "Cucumber",
+    "sku": "TN-VG-008",
+    "category": "Vegetables",
+    "supplier": "Kanchipuram Greens",
+    "stock": 21,
+    "unit": "500 g",
+    "price": 32,
+    "id": "39af1bf7-dc7c-42bd-9a15-294b4aa29b21",
+    "image": "/images/products/TN-VG-008.jpg"
+  },
+  {
+    "name": "Foxtail millet (Thinai)",
+    "sku": "TN-RC-007",
+    "category": "Rice & Grains",
+    "supplier": "Salem Millet Collective",
+    "stock": 22,
+    "unit": "1 kg",
+    "price": 115,
+    "id": "835104c1-a32d-45e2-9a60-479cd2c7b261",
+    "image": "/images/products/TN-RC-007.jpg"
+  },
+  {
+    "name": "Maize grain",
+    "sku": "TN-RC-008",
+    "category": "Rice & Grains",
+    "supplier": "Salem Grain Mill",
+    "stock": 18,
+    "unit": "1 kg",
+    "price": 72,
+    "id": "3aa1377c-ee2f-44d5-9cef-41f6ed6e3a75",
+    "image": "/images/products/TN-RC-008.jpg"
+  },
+  {
+    "name": "Toor dal",
+    "sku": "TN-PL-001",
+    "category": "Pulses",
+    "supplier": "Native Grocery Market",
+    "stock": 28,
+    "unit": "1 kg",
+    "price": 165,
+    "id": "221644dd-a4b7-4085-9ae9-5073e7c8a4fd",
+    "image": "/images/products/TN-PL-001.jpg"
+  },
+  {
+    "name": "Chana dal",
+    "sku": "TN-PL-002",
+    "category": "Pulses",
+    "supplier": "Native Grocery Market",
+    "stock": 26,
+    "unit": "1 kg",
+    "price": 95,
+    "id": "3c4e3499-7a89-43c4-9ee9-3ebdbed54108",
+    "image": "/images/products/TN-PL-002.jpg"
+  },
+  {
+    "name": "Whole green gram",
+    "sku": "TN-PL-003",
+    "category": "Pulses",
+    "supplier": "Native Grocery Market",
+    "stock": 24,
+    "unit": "1 kg",
+    "price": 135,
+    "id": "c0f67e48-913c-4fe5-8b7c-1bb3a2dc5c7f",
+    "image": "/images/products/TN-PL-003.jpg"
+  },
+  {
+    "name": "Whole urad dal",
+    "sku": "TN-PL-004",
+    "category": "Pulses",
+    "supplier": "Native Grocery Market",
+    "stock": 22,
+    "unit": "1 kg",
+    "price": 145,
+    "id": "146054e3-f8b6-4c16-a31c-d3238f0b6c75",
+    "image": "/images/products/TN-PL-004.jpg"
+  },
+  {
+    "name": "Red masoor dal",
+    "sku": "TN-PL-005",
+    "category": "Pulses",
+    "supplier": "Native Grocery Market",
+    "stock": 20,
+    "unit": "1 kg",
+    "price": 110,
+    "id": "cd9e3a7d-8d2e-48c0-a1b9-250efc71e3dc",
+    "image": "/images/products/TN-PL-005.jpg"
+  }
+]
+
+export function getLocalProductPage(options: {
+  page?: number
+  limit?: number
+  search?: string
+  category?: string
+  sort?: string
+  availability?: string
+}): ProductPage {
+  const page = Math.max(1, options.page || 1)
+  const limit = Math.min(50, Math.max(1, options.limit || 12))
+  const search = (options.search || '').trim().toLowerCase()
+  const category = options.category && options.category !== 'All groceries' ? options.category : ''
+  const inStockOnly = options.availability === 'in-stock'
+  const sort = options.sort || 'name-asc'
+
+  const filtered = localProductsCatalog
+    .filter((product) => {
+      const matchesSearch =
+        !search ||
+        [product.name, product.sku, product.supplier, product.category].some((value) =>
+          value.toLowerCase().includes(search)
+        )
+      return (
+        matchesSearch &&
+        (!inStockOnly || product.stock > 0) &&
+        (!category || product.category === category)
+      )
+    })
+    .sort((first, second) => {
+      if (sort === 'price-asc') return first.price - second.price || first.name.localeCompare(second.name)
+      if (sort === 'price-desc') return second.price - first.price || first.name.localeCompare(second.name)
+      if (sort === 'name-desc') return second.name.localeCompare(first.name)
+      return first.name.localeCompare(second.name)
+    })
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / limit))
+  const currentPage = Math.min(page, totalPages)
+  return {
+    items: filtered.slice((currentPage - 1) * limit, currentPage * limit),
+    page: currentPage,
+    limit,
+    total: filtered.length,
+    totalPages,
+  }
+}

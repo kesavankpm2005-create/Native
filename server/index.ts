@@ -18,7 +18,10 @@ type Product = {
 }
 
 const app = express()
-const port = Number(process.env.API_PORT ?? 3001)
+const port = Number(process.env.PORT ?? process.env.API_PORT ?? 3001)
+const settingsPath = resolve(dirname(fileURLToPath(import.meta.url)), 'data', 'settings.json')
+const uploadsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../public/images/uploads')
+mkdir(uploadsDir, { recursive: true }).catch(() => undefined)
 const databasePath = resolve(dirname(fileURLToPath(import.meta.url)), 'data', 'products.json')
 const messagesPath = resolve(dirname(fileURLToPath(import.meta.url)), 'data', 'messages.json')
 const ordersPath = resolve(dirname(fileURLToPath(import.meta.url)), 'data', 'orders.json')
@@ -132,7 +135,63 @@ function cleanProduct(input: Partial<Product>) {
 }
 
 app.use(cors())
-app.use(express.json())
+app.use(express.json({ limit: '15mb' }))
+app.use('/images', express.static(resolve(dirname(fileURLToPath(import.meta.url)), '../public/images')))
+
+app.get('/api/settings', async (_request, response) => {
+  try {
+    const settings = JSON.parse(await readFile(settingsPath, 'utf8'))
+    response.json(settings)
+  } catch {
+    response.json({
+      heroImage: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=2400&q=90',
+      heroAlt: 'Tamil Nadu village produce and grocery market',
+    })
+  }
+})
+
+app.patch('/api/settings', async (request, response) => {
+  try {
+    let current = {
+      heroImage: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=2400&q=90',
+      heroAlt: 'Tamil Nadu village produce and grocery market',
+    }
+    try {
+      current = JSON.parse(await readFile(settingsPath, 'utf8'))
+    } catch {
+      // default
+    }
+    const updated = { ...current, ...(request.body as Record<string, unknown>) }
+    await mkdir(dirname(settingsPath), { recursive: true })
+    await writeFile(settingsPath, `${JSON.stringify(updated, null, 2)}\n`, 'utf8')
+    response.json(updated)
+  } catch {
+    response.status(500).json({ error: 'Failed to update settings.' })
+  }
+})
+
+app.post('/api/upload', async (request, response) => {
+  try {
+    const { filename, base64 } = request.body as { filename?: string; base64?: string }
+    if (!base64 || typeof base64 !== 'string') {
+      return response.status(400).json({ error: 'Invalid or missing image data.' })
+    }
+
+    await mkdir(uploadsDir, { recursive: true })
+    const ext = (filename?.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg'
+    const safeName = `img-${Date.now()}-${randomUUID().slice(0, 8)}.${ext}`
+    const targetPath = resolve(uploadsDir, safeName)
+
+    const base64Data = base64.replace(/^data:image\/\w+;base64,/, '')
+    const buffer = Buffer.from(base64Data, 'base64')
+
+    await writeFile(targetPath, buffer)
+    return response.json({ url: `/images/uploads/${safeName}` })
+  } catch (error) {
+    console.error('Upload failed:', error)
+    return response.status(500).json({ error: 'Failed to save uploaded image.' })
+  }
+})
 
 app.get('/api/products', async (request, response) => {
   const products = await readProducts()
@@ -294,6 +353,17 @@ app.post('/api/contact', async (request, response) => {
   await mkdir(dirname(messagesPath), { recursive: true })
   await writeFile(messagesPath, `${JSON.stringify(messages, null, 2)}\n`, 'utf8')
   return response.status(201).json({ message: 'Contact message received.' })
+})
+
+const distPath = resolve(dirname(fileURLToPath(import.meta.url)), '../dist')
+app.use(express.static(distPath))
+
+app.use((request, response, next) => {
+  if (request.method !== 'GET') return next()
+  if (request.path.startsWith('/api') || request.path.startsWith('/images')) return next()
+  response.sendFile(resolve(distPath, 'index.html'), (err) => {
+    if (err) next()
+  })
 })
 
 export default app

@@ -9,6 +9,7 @@ import CartPage from './pages/CartPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import ProductsPage from './pages/ProductsPage'
+import AdminPage from './pages/AdminPage'
 import { type Product } from './productData'
 import './App.css'
 import './productCardLayout.css'
@@ -69,6 +70,7 @@ function AppContent() {
           <Route path="/cart" element={<CartPage items={cart} onQuantityChange={updateQuantity} onOrderPlaced={() => setCart([])} />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

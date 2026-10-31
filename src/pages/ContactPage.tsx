@@ -40,7 +40,7 @@ export default function ContactPage() {
     <div className="inner-page contact-page">
       <section className="contact-intro">
         <span className="section-kicker">
-          {lang === 'ta' ? 'நாங்கள் உங்கள் அருகில்' : "WE'RE AROUND THE CORNER"}
+          {lang === 'ta' ? 'கலசப்பாக்கம் · நாங்கள் உங்கள் அருகில்' : "NAMMA KALASAPAKKAM · WE'RE AROUND THE CORNER"}
         </span>
         <h1>
           {lang === 'ta' ? 'எங்களை எளிதாக' : 'Come say'}
@@ -49,8 +49,8 @@ export default function ContactPage() {
         </h1>
         <p>
           {lang === 'ta'
-            ? 'மளிகை ஆர்டர், ஏதேனும் சந்தேகம் அல்லது வாட்ஸ்அப் உதவி வேண்டுமா? நாங்கள் உதவ எப்போதும் தயாராக உள்ளோம்.'
-            : 'Have a question about products, delivery locations, or need help ordering on WhatsApp? We are right here.'}
+            ? 'கலசப்பாக்கம் மெயின் ரோடு அங்காடி அல்லது வாட்ஸ்அப் (+91 96550 82236) மூலம் உங்கள் கிராமத்துக்கான மளிகைப் பொருட்களை எளிதாகப் பெறலாம்.'
+            : 'Visit our Kalasapakkam Main Road store or message us on WhatsApp (+91 96550 82236) to confirm delivery for your village or hamlet.'}
         </p>
       </section>
 

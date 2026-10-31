@@ -23,8 +23,9 @@ import {
 } from '../productData'
 import { useI18n } from '../i18n'
 import { translateCategory } from '../i18nData'
+import { getLocalProductPage } from '../catalogData'
 
-const emptyPage: ProductPage = { items: [], page: 1, limit: 12, total: 0, totalPages: 1 }
+
 
 const topBrands = [
   'All Brands',
@@ -62,9 +63,19 @@ export default function ProductsPage({
   const [selectedBrand, setSelectedBrand] = useState('All Brands')
   const [sort, setSort] = useState('name-asc')
   const [availability, setAvailability] = useState('all')
-  const [result, setResult] = useState<ProductPage>(emptyPage)
   const [page, setPage] = useState(1)
-  const [loading, setLoading] = useState(true)
+  const [serverData, setServerData] = useState<{ key: string; page: ProductPage } | null>(null)
+  const currentKey = `${page}|${search}|${category}|${sort}|${availability}`
+  const localData = getLocalProductPage({
+    page,
+    limit: 12,
+    search,
+    category,
+    sort,
+    availability,
+  })
+  const result = serverData?.key === currentKey ? serverData.page : localData
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [voiceOpen, setVoiceOpen] = useState(false)
 
@@ -96,10 +107,6 @@ export default function ProductsPage({
 
   useEffect(() => {
     const controller = new AbortController()
-    window.queueMicrotask(() => {
-      setLoading(true)
-      setError('')
-    })
 
     const params = new URLSearchParams({
       page: String(page),
@@ -121,15 +128,18 @@ export default function ProductsPage({
         return response.json() as Promise<ProductPage>
       })
       .then((data) => {
-        setResult(data)
+        setServerData({ key: currentKey, page: data })
+        setError('')
       })
       .catch((requestError: unknown) => {
         if (!controller.signal.aborted) {
-          setError(
-            requestError instanceof Error
-              ? requestError.message
-              : 'Unable to load products.'
-          )
+          if (localData.items.length === 0) {
+            setError(
+              requestError instanceof Error
+                ? requestError.message
+                : 'Unable to load products.'
+            )
+          }
         }
       })
       .finally(() => {
@@ -137,7 +147,7 @@ export default function ProductsPage({
       })
 
     return () => controller.abort()
-  }, [page, search, category, sort, availability])
+  }, [page, search, category, sort, availability, currentKey, localData.items.length])
 
   useEffect(() => {
     updateCategoryScroll()
