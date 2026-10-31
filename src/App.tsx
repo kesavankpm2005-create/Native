@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { SiteFooter, SiteHeader } from './components'
+import { FloatingWhatsAppButton, MobileBottomNav, SiteFooter, SiteHeader } from './components'
 import { readCart, writeCart, type CartEntry } from './cart'
+import { I18nProvider } from './i18n'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
 import CartPage from './pages/CartPage'
 import HomePage from './pages/HomePage'
+import LoginPage from './pages/LoginPage'
 import ProductsPage from './pages/ProductsPage'
 import { type Product } from './productData'
 import './App.css'
 import './productCardLayout.css'
 
-function App() {
+function AppContent() {
   const [cart, setCart] = useState<CartEntry[]>(readCart)
   const cartCount = cart.reduce((total, entry) => total + entry.quantity, 0)
 
@@ -20,7 +22,7 @@ function App() {
   useEffect(() => {
     if (cart.length === 0) return
     const controller = new AbortController()
-    fetch('/api/products?limit=50', { signal: controller.signal })
+    fetch('/api/products?limit=100', { signal: controller.signal })
       .then((response) => response.ok ? response.json() as Promise<{ items: Product[] }> : Promise.reject(new Error('Unable to refresh cart products')))
       .then(({ items }) => {
         const productsById = new Map(items.map((product) => [product.id, product]))
@@ -66,12 +68,21 @@ function App() {
           <Route path="/products" element={<ProductsPage items={cart} onAdd={addQuantityToBag} />} />
           <Route path="/cart" element={<CartPage items={cart} onQuantityChange={updateQuantity} onOrderPlaced={() => setCart([])} />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+      <FloatingWhatsAppButton />
+      <MobileBottomNav cartCount={cartCount} />
       <SiteFooter />
     </div>
   )
 }
 
-export default App
+export default function App() {
+  return (
+    <I18nProvider>
+      <AppContent />
+    </I18nProvider>
+  )
+}

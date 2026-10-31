@@ -14,6 +14,7 @@ type Product = {
   stock: number
   unit: string
   price: number
+  image?: string
 }
 
 const app = express()
@@ -125,8 +126,9 @@ function cleanProduct(input: Partial<Product>) {
   const unit = typeof input.unit === 'string' ? input.unit.trim() : ''
   const stock = Number(input.stock)
   const price = Number(input.price)
+  const image = typeof input.image === 'string' ? input.image.trim() : undefined
   if (!name || !sku || !category || !supplier || !unit || !Number.isFinite(stock) || stock < 0 || !Number.isFinite(price) || price < 0) return null
-  return { name, sku, category, supplier, unit, stock: Math.floor(stock), price }
+  return { name, sku, category, supplier, unit, stock: Math.floor(stock), price, ...(image ? { image } : {}) }
 }
 
 app.use(cors())

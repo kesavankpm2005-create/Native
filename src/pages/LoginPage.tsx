@@ -3,6 +3,7 @@ import type { Session } from '@supabase/supabase-js'
 import { ArrowRight, Leaf, LockKeyhole, LogOut, Mail, UserRound } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useI18n } from '../i18n'
 
 type CustomerProfile = {
   customer_id: string
@@ -16,6 +17,7 @@ function isCustomerProfile(value: unknown): value is CustomerProfile {
 }
 
 export default function LoginPage() {
+  const { lang } = useI18n()
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<CustomerProfile | null>(null)
   const [mode, setMode] = useState<'login' | 'signup'>('login')
@@ -39,11 +41,11 @@ export default function LoginPage() {
         .maybeSingle()
       if (!active) return
       if (profileError) {
-        setError('We could not load your customer profile. Please try again.')
+        setError(lang === 'ta' ? 'வாடிக்கையாளர் சுயவிவரத்தை ஏற்ற முடியவில்லை.' : 'We could not load your customer profile. Please try again.')
         return
       }
       if (!isCustomerProfile(data)) {
-        setError('Your customer profile is not ready yet. If you just signed up, verify your email and sign in again.')
+        setError(lang === 'ta' ? 'உங்கள் கணக்கு இன்னும் தயாராகவில்லை. மின்னஞ்சலை உறுதி செய்யவும்.' : 'Your customer profile is not ready yet. If you just signed up, verify your email and sign in again.')
         return
       }
       setProfile(data)
@@ -71,7 +73,7 @@ export default function LoginPage() {
       active = false
       subscription.unsubscribe()
     }
-  }, [])
+  }, [lang])
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -88,7 +90,7 @@ export default function LoginPage() {
         })
         if (signUpError) throw signUpError
         if (!data.session) {
-          setMessage('Check your email for a verification link. Your customer ID will be ready after you verify and sign in.')
+          setMessage(lang === 'ta' ? 'உங்கள் மின்னஞ்சலுக்கு சரிபார்ப்பு இணைப்பு அனுப்பப்பட்டுள்ளது.' : 'Check your email for a verification link. Your customer ID will be ready after you verify and sign in.')
         }
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
@@ -111,7 +113,7 @@ export default function LoginPage() {
       if (preferenceError) throw preferenceError
       if (!data) throw new Error('Your customer profile was not found. Please sign in again.')
       setProfile((current) => current ? { ...current, updates_opt_in: updatesOptIn } : current)
-      setMessage('Your email update preference has been saved.')
+      setMessage(lang === 'ta' ? 'உங்கள் விருப்பம் சேமிக்கப்பட்டது.' : 'Your email update preference has been saved.')
     } catch (preferenceError) {
       setError(preferenceError instanceof Error ? preferenceError.message : 'We could not save your preference.')
     } finally {
@@ -126,33 +128,99 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="inner-page login-page"><section className="login-layout">
-      <div className="login-aside"><span className="login-leaf"><Leaf size={23} /></span><span className="section-kicker">A NOTE FOR OUR NEIGHBORS</span><h1>Your groceries.<br />Your <em>account.</em></h1><p>Create an account to keep your customer ID and choose whether you’d like email updates from Native Groceries.</p><div className="login-aside-note"><span>NEED A HAND?</span><Link to="/contact">Talk to our team <ArrowRight size={14} /></Link></div></div>
-      <div className="login-form-wrap">
-        {session ? <>
-          <div className="login-icon"><UserRound size={20} /></div><span className="section-kicker">CUSTOMER ACCOUNT</span><h2>Your account</h2><p>{session.user.email}</p>
-          {profile ? <div className="customer-account-details">
-            <div className="customer-id-card"><span>YOUR CUSTOMER ID</span><strong>{profile.customer_id}</strong></div>
-            <label className="updates-opt-in"><input type="checkbox" checked={updatesOptIn} onChange={(event) => setUpdatesOptIn(event.target.checked)} /><span>Email me about new products and store updates.</span></label>
-            <button className="solid-button" type="button" disabled={savingUpdates || updatesOptIn === profile.updates_opt_in} onClick={saveUpdatesPreference}>{savingUpdates ? 'Saving...' : 'Save update preference'}</button>
-          </div> : loading ? <p role="status">Loading your customer ID...</p> : <p role="alert">{error || 'Customer profile is unavailable.'}</p>}
-          {error && <p className="form-message" role="alert">{error}</p>}
-          {message && <p className="form-success" role="status">{message}</p>}
-          <button className="account-signout" type="button" onClick={signOut}><LogOut size={15} /> Sign out</button>
-        </> : <>
-          <div className="login-icon">{mode === 'signup' ? <Mail size={20} /> : <LockKeyhole size={20} />}</div><span className="section-kicker">CUSTOMER ACCESS</span><h2>{mode === 'signup' ? 'Create your account' : 'Welcome back'}</h2><p>{mode === 'signup' ? 'Sign up to get your customer ID.' : 'Log in to view your customer ID and preferences.'}</p>
-          <form className="auth-form" onSubmit={submit}>
-            <label>Email address<input type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" /></label>
-            <label>Password<input type="password" autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} minLength={8} required value={password} onChange={(event) => setPassword(event.target.value)} placeholder="At least 8 characters" /></label>
-            {mode === 'signup' && <label className="updates-opt-in"><input type="checkbox" checked={updatesOptIn} onChange={(event) => setUpdatesOptIn(event.target.checked)} /><span>Email me about new products and store updates. You can change this later.</span></label>}
-            <button className="solid-button" type="submit" disabled={loading || !supabase}>{loading ? 'Please wait...' : mode === 'signup' ? 'Create account' : 'Log in'} <ArrowRight size={16} /></button>
-            {error && <p className="form-message" role="alert">{error}</p>}
-            {message && <p className="form-success" role="status">{message}</p>}
-          </form>
-          <div className="login-help">{mode === 'signup' ? 'Already have an account?' : 'New to Native Groceries?'} <button className="auth-mode-toggle" type="button" onClick={() => { setMode((current) => current === 'login' ? 'signup' : 'login'); setMessage(''); setError('') }}>{mode === 'signup' ? 'Log in' : 'Create an account'}</button></div>
-        </>}
-        {!supabase && <div className="auth-configuration-error" role="alert">Customer login is not configured yet. Add the Supabase project URL and publishable key to the Vercel environment settings.</div>}
-      </div>
-    </section></div>
+    <div className="inner-page login-page">
+      <section className="login-layout">
+        <div className="login-aside">
+          <span className="login-leaf"><Leaf size={24} /></span>
+          <span className="section-kicker">{lang === 'ta' ? 'நேட்டிவ் மளிகை கணக்கு' : 'A NOTE FOR OUR NEIGHBORS'}</span>
+          <h1>{lang === 'ta' ? 'நம்ம ஊர் மளிகை.' : 'Your groceries.'}<br />{lang === 'ta' ? 'உங்கள்' : 'Your'} <em>{lang === 'ta' ? 'கணக்கு.' : 'account.'}</em></h1>
+          <p>{lang === 'ta' ? 'மளிகைப் பொருட்களை விரைவாக ஆர்டர் செய்யவும், சிறப்பு சலுகைகளைப் பெறவும் உங்கள் கணக்கில் உள்நுழையவும்.' : 'Create an account to keep your customer ID and receive fresh updates from Native Groceries.'}</p>
+          <div className="login-aside-note">
+            <span>{lang === 'ta' ? 'உதவி வேண்டுமா?' : 'NEED A HAND?'}</span>
+            <Link to="/contact">{lang === 'ta' ? 'எங்கள் குழுவுடன் பேச' : 'Talk to our team'} <ArrowRight size={14} /></Link>
+          </div>
+        </div>
+
+        <div className="login-form-wrap">
+          {session ? (
+            <>
+              <div className="login-icon"><UserRound size={22} /></div>
+              <span className="section-kicker">{lang === 'ta' ? 'வாடிக்கையாளர் கணக்கு' : 'CUSTOMER ACCOUNT'}</span>
+              <h2>{lang === 'ta' ? 'உங்கள் சுயவிவரம்' : 'Your account'}</h2>
+              <p>{session.user.email}</p>
+
+              {profile ? (
+                <div className="customer-account-details">
+                  <div className="customer-id-card">
+                    <span>{lang === 'ta' ? 'வாடிக்கையாளர் எண்' : 'YOUR CUSTOMER ID'}</span>
+                    <strong>{profile.customer_id}</strong>
+                  </div>
+                  <label className="updates-opt-in">
+                    <input type="checkbox" checked={updatesOptIn} onChange={(event) => setUpdatesOptIn(event.target.checked)} />
+                    <span>{lang === 'ta' ? 'புதிய தயாரிப்புகள் மற்றும் சலுகைகள் பற்றிய மின்னஞ்சல்களை பெறுகிறேன்.' : 'Email me about new products and store updates.'}</span>
+                  </label>
+                  <button className="solid-button" type="button" disabled={savingUpdates || updatesOptIn === profile.updates_opt_in} onClick={saveUpdatesPreference}>
+                    {savingUpdates ? (lang === 'ta' ? 'சேமிக்கப்படுகிறது...' : 'Saving...') : (lang === 'ta' ? 'விருப்பத்தை சேமிக்கவும்' : 'Save update preference')}
+                  </button>
+                </div>
+              ) : loading ? (
+                <p role="status">{lang === 'ta' ? 'சுயவிவரம் ஏற்றப்படுகிறது...' : 'Loading your customer ID...'}</p>
+              ) : (
+                <p role="alert">{error || (lang === 'ta' ? 'வாடிக்கையாளர் சுயவிவரம் கிடைக்கவில்லை.' : 'Customer profile is unavailable.')}</p>
+              )}
+
+              {error && <p className="form-message" role="alert">{error}</p>}
+              {message && <p className="form-success" role="status">{message}</p>}
+              <button className="account-signout" type="button" onClick={signOut}>
+                <LogOut size={15} /> {lang === 'ta' ? 'வெளியேறு' : 'Sign out'}
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="login-icon">{mode === 'signup' ? <Mail size={22} /> : <LockKeyhole size={22} />}</div>
+              <span className="section-kicker">{lang === 'ta' ? 'வாடிக்கையாளர் உள்நுழைவு' : 'CUSTOMER ACCESS'}</span>
+              <h2>{mode === 'signup' ? (lang === 'ta' ? 'புதிய கணக்கை உருவாக்கவும்' : 'Create your account') : (lang === 'ta' ? 'மீண்டும் வருக!' : 'Welcome back')}</h2>
+              <p>{mode === 'signup' ? (lang === 'ta' ? 'எளிதான மளிகை ஆர்டருக்கு பதிவு செய்யுங்கள்.' : 'Sign up to get your customer ID.') : (lang === 'ta' ? 'உங்கள் கணக்கில் உள்நுழையவும்.' : 'Log in to view your customer ID and preferences.')}</p>
+
+              <form className="auth-form" onSubmit={submit}>
+                <label>
+                  {lang === 'ta' ? 'மின்னஞ்சல் முகவரி' : 'Email address'}
+                  <input type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" />
+                </label>
+                <label>
+                  {lang === 'ta' ? 'கடவுச்சொல்' : 'Password'}
+                  <input type="password" autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} minLength={8} required value={password} onChange={(event) => setPassword(event.target.value)} placeholder="At least 8 characters" />
+                </label>
+                {mode === 'signup' && (
+                  <label className="updates-opt-in">
+                    <input type="checkbox" checked={updatesOptIn} onChange={(event) => setUpdatesOptIn(event.target.checked)} />
+                    <span>{lang === 'ta' ? 'புதிய மளிகைப் பொருட்கள் பற்றிய அறிவிப்புகளை பெறுகிறேன்.' : 'Email me about new products and store updates.'}</span>
+                  </label>
+                )}
+                <button className="solid-button" type="submit" disabled={loading || !supabase}>
+                  {loading ? (lang === 'ta' ? 'காத்திருக்கவும்...' : 'Please wait...') : mode === 'signup' ? (lang === 'ta' ? 'கணக்கை உருவாக்க' : 'Create account') : (lang === 'ta' ? 'உள்நுழைய' : 'Log in')}{' '}
+                  <ArrowRight size={16} />
+                </button>
+                {error && <p className="form-message" role="alert">{error}</p>}
+                {message && <p className="form-success" role="status">{message}</p>}
+              </form>
+
+              <div className="login-help">
+                {mode === 'signup' ? (lang === 'ta' ? 'ஏற்கனவே கணக்கு உள்ளதா?' : 'Already have an account?') : (lang === 'ta' ? 'நேட்டிவ் மளிகைக்கு புதியவரா?' : 'New to Native Groceries?')}{' '}
+                <button className="auth-mode-toggle" type="button" onClick={() => { setMode((current) => current === 'login' ? 'signup' : 'login'); setMessage(''); setError('') }}>
+                  {mode === 'signup' ? (lang === 'ta' ? 'உள்நுழைய' : 'Log in') : (lang === 'ta' ? 'கணக்கு தொடங்க' : 'Create an account')}
+                </button>
+              </div>
+            </>
+          )}
+
+          {!supabase && (
+            <div className="auth-configuration-error" role="alert">
+              Customer login is optional for ordering. You can order groceries directly with Cash on Delivery without an account!
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
   )
 }

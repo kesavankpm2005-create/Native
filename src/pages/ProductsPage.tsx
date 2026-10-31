@@ -1,33 +1,79 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { Check, ChevronLeft, ChevronRight, MessageCircle, Plus, Search, SlidersHorizontal, Trash2, X } from 'lucide-react'
+import {
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  Leaf,
+  MessageCircle,
+  Mic,
+  RotateCcw,
+  Search,
+  X,
+} from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
 import type { CartEntry } from '../cart'
-import { Pagination, ProductCard } from '../components'
-import { categories, money, type Product, type ProductPage } from '../productData'
+import { Pagination, ProductCard, VoiceSearchModal } from '../components'
+import {
+  categories,
+  money,
+  productBrand,
+  type Product,
+  type ProductPage,
+} from '../productData'
+import { useI18n } from '../i18n'
+import { translateCategory } from '../i18nData'
 
-const emptyPage: ProductPage = { items: [], page: 1, limit: 8, total: 0, totalPages: 1 }
+const emptyPage: ProductPage = { items: [], page: 1, limit: 12, total: 0, totalPages: 1 }
 
-type CustomOrderItem = {
-  name: string
-  quantity: number
-  unit: string
-  details: string
-}
+const topBrands = [
+  'All Brands',
+  'Aashirvaad',
+  'Tata Sampann',
+  'Amul',
+  'Aavin',
+  'Britannia',
+  'Sunfeast',
+  'Cadbury',
+  'Surf Excel',
+  'Vim',
+  'Colgate',
+  'Parachute',
+  'India Gate',
+  '24 Mantra',
+  'Farm Fresh Produce',
+]
 
-export default function ProductsPage({ items, onAdd }: { items: CartEntry[]; onAdd: (product: Product, quantity: number) => void }) {
+export default function ProductsPage({
+  items,
+  onAdd,
+}: {
+  items: CartEntry[]
+  onAdd: (product: Product, quantity: number) => void
+}) {
+  const { lang, t } = useI18n()
   const [searchParams, setSearchParams] = useSearchParams()
+
   const requestedCategory = searchParams.get('category') ?? 'All groceries'
   const category = categories.includes(requestedCategory) ? requestedCategory : 'All groceries'
-  const [search, setSearch] = useState('')
+  const initialSearch = searchParams.get('search') ?? ''
+
+  const [search, setSearch] = useState(initialSearch)
+  const [selectedBrand, setSelectedBrand] = useState('All Brands')
   const [sort, setSort] = useState('name-asc')
   const [availability, setAvailability] = useState('all')
   const [result, setResult] = useState<ProductPage>(emptyPage)
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [selectionNotice, setSelectionNotice] = useState<{ name: string; quantity: number; unit: string; stockLimitReached: boolean } | null>(null)
-  const [customItems, setCustomItems] = useState<CustomOrderItem[]>([])
-  const [showCustomForm, setShowCustomForm] = useState(false)
+  const [voiceOpen, setVoiceOpen] = useState(false)
+
+  const [selectionNotice, setSelectionNotice] = useState<{
+    name: string
+    quantity: number
+    unit: string
+  } | null>(null)
+
   const categoryListRef = useRef<HTMLDivElement>(null)
   const [categoryScroll, setCategoryScroll] = useState({ left: false, right: false })
 
@@ -40,22 +86,56 @@ export default function ProductsPage({ items, onAdd }: { items: CartEntry[]; onA
     })
   }
 
+  // Synchronize when search query parameter changes
+  useEffect(() => {
+    const urlSearch = searchParams.get('search') ?? ''
+    if (urlSearch !== search) {
+      window.queueMicrotask(() => setSearch(urlSearch))
+    }
+  }, [searchParams, search])
+
   useEffect(() => {
     const controller = new AbortController()
-    const params = new URLSearchParams({ page: String(page), limit: '8', search })
-    if (category !== 'All groceries') params.set('category', category)
+    window.queueMicrotask(() => {
+      setLoading(true)
+      setError('')
+    })
+
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: '12',
+      search: search.trim(),
+    })
+
+    if (category !== 'All groceries') {
+      params.set('category', category)
+    }
     params.set('sort', sort)
-    if (availability === 'in-stock') params.set('availability', availability)
+    if (availability === 'in-stock') {
+      params.set('availability', availability)
+    }
+
     fetch(`/api/products?${params}`, { signal: controller.signal })
       .then(async (response) => {
-        if (!response.ok) throw new Error('We could not load the market right now.')
+        if (!response.ok) throw new Error('We could not load groceries right now.')
         return response.json() as Promise<ProductPage>
       })
-      .then(setResult)
-      .catch((requestError: unknown) => {
-        if (!controller.signal.aborted) setError(requestError instanceof Error ? requestError.message : 'Unable to load products.')
+      .then((data) => {
+        setResult(data)
       })
-      .finally(() => { if (!controller.signal.aborted) setLoading(false) })
+      .catch((requestError: unknown) => {
+        if (!controller.signal.aborted) {
+          setError(
+            requestError instanceof Error
+              ? requestError.message
+              : 'Unable to load products.'
+          )
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false)
+      })
+
     return () => controller.abort()
   }, [page, search, category, sort, availability])
 
@@ -67,119 +147,400 @@ export default function ProductsPage({ items, onAdd }: { items: CartEntry[]; onA
 
   useEffect(() => {
     if (!selectionNotice) return
-    const timeout = window.setTimeout(() => setSelectionNotice(null), 4500)
+    const timeout = window.setTimeout(() => setSelectionNotice(null), 4000)
     return () => window.clearTimeout(timeout)
   }, [selectionNotice])
 
   function chooseCategory(nextCategory: string) {
-    setLoading(true)
-    setError('')
     setPage(1)
-    setSearchParams(nextCategory === 'All groceries' ? {} : { category: nextCategory })
+    const nextParams = new URLSearchParams(searchParams)
+    if (nextCategory === 'All groceries') {
+      nextParams.delete('category')
+    } else {
+      nextParams.set('category', nextCategory)
+    }
+    setSearchParams(nextParams)
   }
 
   function scrollCategories(direction: -1 | 1) {
-    categoryListRef.current?.scrollBy({ left: direction * 220, behavior: 'smooth' })
+    categoryListRef.current?.scrollBy({ left: direction * 240, behavior: 'smooth' })
   }
 
-  function updateSort(value: string) {
-    setLoading(true)
-    setError('')
+  function handleSearchSubmit(e: FormEvent) {
+    e.preventDefault()
     setPage(1)
-    setSort(value)
+    const nextParams = new URLSearchParams(searchParams)
+    if (search.trim()) {
+      nextParams.set('search', search.trim())
+    } else {
+      nextParams.delete('search')
+    }
+    setSearchParams(nextParams)
   }
 
-  function updateAvailability(value: string) {
-    setLoading(true)
-    setError('')
+  function resetAllFilters() {
+    setSearch('')
+    setSelectedBrand('All Brands')
+    setSort('name-asc')
+    setAvailability('all')
     setPage(1)
-    setAvailability(value)
+    setSearchParams({})
+  }
+
+  // Filter items in memory by brand if a specific brand pill is clicked
+  const displayedItems = result.items.filter((product) => {
+    if (selectedBrand === 'All Brands') return true
+    if (selectedBrand === 'Farm Fresh Produce') {
+      return ['Leafy Greens', 'Vegetables', 'Fruits'].includes(product.category)
+    }
+    const brand = productBrand(product).toLowerCase()
+    return brand.includes(selectedBrand.toLowerCase())
+  })
+
+  function handleOrder(product: Product, quantity: number) {
+    onAdd(product, quantity)
+    setSelectionNotice({
+      name: product.name,
+      quantity,
+      unit: product.unit,
+    })
   }
 
   const itemCount = items.reduce((count, entry) => count + entry.quantity, 0)
-  const subtotal = items.reduce((total, entry) => total + entry.product.price * entry.quantity, 0)
-  const customItemCount = customItems.reduce((count, item) => count + item.quantity, 0)
-
-  function selectProduct(product: Product, quantity: number) {
-    const selectedQuantity = items.find((entry) => entry.product.id === product.id)?.quantity ?? 0
-    const addedQuantity = Math.min(quantity, Math.max(0, product.stock - selectedQuantity))
-    if (addedQuantity === 0) {
-      setSelectionNotice({ name: product.name, quantity: selectedQuantity, unit: product.unit, stockLimitReached: true })
-      return
-    }
-    onAdd(product, addedQuantity)
-    setSelectionNotice({ name: product.name, quantity: addedQuantity, unit: product.unit, stockLimitReached: false })
-  }
-
-  function addCustomItem(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const form = new FormData(event.currentTarget)
-    const name = String(form.get('itemName') ?? '').trim()
-    const quantity = Number(form.get('quantity'))
-    const unit = String(form.get('unit') ?? 'each')
-    const details = String(form.get('details') ?? '').trim()
-    if (!name || !Number.isInteger(quantity) || quantity < 1) return
-    setCustomItems((current) => [...current, { name, quantity, unit, details }])
-    setSelectionNotice({ name, quantity, unit, stockLimitReached: false })
-    event.currentTarget.reset()
-    setShowCustomForm(false)
-  }
-
-  function orderOnWhatsApp() {
-    if (items.length === 0 && customItems.length === 0) return
-    const message = [
-      'Hello Native Groceries! I would like to order these items:',
-      ...items.map(({ product, quantity }) =>
-        `- ${product.name} x ${quantity} ${product.unit} — ${money(product.price)} each = ${money(product.price * quantity)}`,
-      ),
-      ...(customItems.length ? ['', 'Custom product requests (please confirm availability and price):', ...customItems.map(({ name, quantity, unit, details }) => `- ${name} x ${quantity} ${unit}${details ? ` — ${details}` : ''}`)] : []),
-      '',
-      `Subtotal for listed products: ${money(subtotal)}`,
-      ...(customItems.length ? ['Custom items are not included in the subtotal; please confirm their prices.'] : []),
-    ].join('\n')
-    const url = `https://wa.me/919655082236?text=${encodeURIComponent(message)}`
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
+  const subtotal = items.reduce(
+    (total, entry) => total + entry.product.price * entry.quantity,
+    0
+  )
 
   return (
-    <div className="inner-page products-page">
-      {selectionNotice && <aside className="product-selection-toast" role="status" aria-live="polite">
-        <span className="product-selection-check"><Check size={17} /></span>
-        <div><strong>{selectionNotice.stockLimitReached ? 'Stock limit reached' : 'Product selected'}</strong><span>{selectionNotice.name} · Quantity: {selectionNotice.quantity} {selectionNotice.unit}</span></div>
-        <button type="button" aria-label="Dismiss notification" onClick={() => setSelectionNotice(null)}><X size={17} /></button>
-      </aside>}
-      <section className="products-intro"><div><span className="section-kicker">FROM TAMIL NADU TO YOUR TABLE</span><h1>Everyday<br /><em>groceries.</em></h1><p>Shop rice, wheat, chocolate, fresh dairy, leafy greens, fruits, vegetables, and everyday essentials.</p></div><div className="products-intro-stamp"><span>ROOTED</span><strong>close<br />to home</strong><span>MADE WITH CARE</span></div></section>
-      <section className="catalog-section" aria-label="Product catalog">
-        <div className="custom-product-request">
-          <div><strong>Looking for something else?</strong><span>Request an item that isn't listed in our catalog.</span></div>
-          <button className="custom-request-toggle" type="button" aria-expanded={showCustomForm} onClick={() => setShowCustomForm((open) => !open)}><Plus size={15} /> Request a product</button>
+    <div className="inner-page products-page-wrap">
+      {/* Intro Header */}
+      <section className="products-intro">
+        <div className="products-intro-content">
+          <span className="section-kicker">
+            <Leaf size={14} /> {lang === 'ta' ? 'நம்ம ஊர் மளிகைக் கடை' : 'OUR VILLAGE STORE'}
+          </span>
+          <h1>
+            {lang === 'ta' ? 'அனைத்து மளிகைப் பொருட்கள்' : 'Pure Groceries,'}
+            <br />
+            <em>{lang === 'ta' ? 'உண்மை பிராண்டுகள் & இயற்கை விளைச்சல்' : 'Honest Packaging.'}</em>
+          </h1>
+          <p>
+            {lang === 'ta'
+              ? 'ஆசீர்வாத், டாடா, அமுல், ஆவின் போன்ற முன்னணி பிராண்டுகள் மற்றும் காவிரி டெல்டா முதல் நீலகிரி வரையிலான கிராமத்து காய்கறிகள்.'
+              : 'Authentic Indian grocery brands and fresh village harvests delivered straight to your home across Tamil Nadu.'}
+          </p>
         </div>
-        {showCustomForm && <form className="custom-request-form" onSubmit={addCustomItem}>
-          <label>Product name<input name="itemName" required maxLength={80} placeholder="What would you like to order?" /></label>
-          <label>Quantity<input name="quantity" type="number" min="1" max="99" defaultValue="1" required /></label>
-          <label>Unit<select name="unit" defaultValue="each"><option value="each">Each</option><option value="pack">Pack</option><option value="kg">Kg</option><option value="g">Grams</option><option value="L">Litres</option><option value="ml">Millilitres</option></select></label>
-          <label className="custom-request-details">Details (optional)<input name="details" maxLength={120} placeholder="Brand, size, or preference" /></label>
-          <button className="solid-button" type="submit">Add request</button>
-        </form>}
-        <div className="catalog-toolbar">
-          <div className="category-scroll-control">
-            <button className="category-scroll-button" type="button" aria-label="Scroll categories left" disabled={!categoryScroll.left} onClick={() => scrollCategories(-1)}><ChevronLeft size={16} /></button>
-            <div className="category-tabs" aria-label="Filter by category" ref={categoryListRef} onScroll={updateCategoryScroll}>{categories.map((item) => <button key={item} type="button" aria-pressed={category === item} className={`category-tab ${category === item ? 'active' : ''}`} onClick={() => chooseCategory(item)}>{item}</button>)}</div>
-            <button className="category-scroll-button" type="button" aria-label="Scroll categories right" disabled={!categoryScroll.right} onClick={() => scrollCategories(1)}><ChevronRight size={16} /></button>
-          </div>
-          <div className="catalog-tools">
-            <label className="catalog-select"><SlidersHorizontal size={14} /><span>Filter</span><select aria-label="Filter products by availability" value={availability} onChange={(event) => updateAvailability(event.target.value)}><option value="all">All products</option><option value="in-stock">In stock</option></select></label>
-            <label className="catalog-select"><span>Sort</span><select aria-label="Sort products" value={sort} onChange={(event) => updateSort(event.target.value)}><option value="name-asc">Name: A to Z</option><option value="name-desc">Name: Z to A</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option></select></label>
-            <label className="catalog-search"><Search size={17} /><input aria-label="Search products" placeholder="Find something good..." value={search} onChange={(event) => { setLoading(true); setError(''); setSearch(event.target.value); setPage(1) }} /></label>
-          </div>
+
+        <div className="products-intro-stamp">
+          <span>TAMIL NADU</span>
+          <strong>100%</strong>
+          <span>GENUINE</span>
         </div>
-        <div className="catalog-result-line"><span>{loading ? 'Gathering the good stuff...' : `${result.total} ${result.total === 1 ? 'good thing' : 'good things'} to browse`}</span>{(category !== 'All groceries' || availability !== 'all') && <button type="button" onClick={() => { if (category !== 'All groceries') chooseCategory('All groceries'); updateAvailability('all') }}>Clear filters <span aria-hidden="true">×</span></button>}</div>
-        {error ? <div className="catalog-state error-message">{error}</div> : loading ? <div className="catalog-state">Finding today's good things...</div> : result.items.length === 0 ? <div className="catalog-state">Nothing on this shelf matches yet. Try another search.</div> : <div className="product-grid catalog-grid">{result.items.map((product: Product) => <ProductCard key={product.id} product={product} onOrder={selectProduct} />)}</div>}
-        {(items.length > 0 || customItems.length > 0) && <aside className="catalog-order-summary" aria-live="polite"><div><strong>{itemCount + customItemCount} {(itemCount + customItemCount) === 1 ? 'item' : 'items'} selected</strong><span>Listed products: {money(subtotal)}{customItems.length ? ' · custom item prices confirmed on WhatsApp' : ''}</span></div>{items.length > 0 && <Link to="/cart">Review listed products</Link>}<button className="solid-button" type="button" onClick={orderOnWhatsApp}><MessageCircle size={16} /> Send all items on WhatsApp</button>
-          {customItems.length > 0 && <ul className="custom-order-items">{customItems.map((item, index) => <li key={`${item.name}-${index}`}><span>{item.name} × {item.quantity} {item.unit}{item.details ? ` — ${item.details}` : ''}</span><button type="button" aria-label={`Remove ${item.name} custom request`} onClick={() => setCustomItems((current) => current.filter((_, itemIndex) => itemIndex !== index))}><Trash2 size={14} /></button></li>)}</ul>}
-        </aside>}
-        {!loading && !error && result.total > 0 && <Pagination page={result.page} totalPages={result.totalPages} total={result.total} limit={result.limit} onPageChange={(nextPage) => { setLoading(true); setPage(nextPage) }} />}
       </section>
+
+      {/* Main Catalog Section */}
+      <section className="catalog-section">
+        {/* Category Scroll Filter */}
+        <div className="catalog-category-bar">
+          <button
+            type="button"
+            className="category-scroll-btn"
+            disabled={!categoryScroll.left}
+            onClick={() => scrollCategories(-1)}
+            aria-label="Scroll categories left"
+          >
+            <ChevronLeft size={18} />
+          </button>
+
+          <div
+            className="category-tabs-scroll"
+            ref={categoryListRef}
+            onScroll={updateCategoryScroll}
+          >
+            {categories.map((cat) => {
+              const active = cat === category
+              const translated = translateCategory(cat, lang)
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  className={`category-tab-btn ${active ? 'active' : ''}`}
+                  onClick={() => chooseCategory(cat)}
+                >
+                  {translated}
+                </button>
+              )
+            })}
+          </div>
+
+          <button
+            type="button"
+            className="category-scroll-btn"
+            disabled={!categoryScroll.right}
+            onClick={() => scrollCategories(1)}
+            aria-label="Scroll categories right"
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
+
+        {/* Brand Filter Pills */}
+        <div className="brand-filter-strip">
+          <span className="filter-label">
+            <Filter size={13} /> {lang === 'ta' ? 'பிராண்டு வாரியாக:' : 'Filter by Brand:'}
+          </span>
+          <div className="brand-pills-scroll">
+            {topBrands.map((brandName) => (
+              <button
+                key={brandName}
+                type="button"
+                className={`brand-pill-btn ${selectedBrand === brandName ? 'active' : ''}`}
+                onClick={() => setSelectedBrand(brandName)}
+              >
+                {brandName}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Filter Toolbar (Search + Sort + In-Stock) */}
+        <div className="catalog-toolbar">
+          <form className="catalog-search" onSubmit={handleSearchSubmit}>
+            <Search size={16} />
+            <input
+              type="text"
+              placeholder={t.searchPlaceholder}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              aria-label="Search catalog"
+            />
+            {search && (
+              <button
+                type="button"
+                className="clear-search-btn"
+                onClick={() => {
+                  setSearch('')
+                  const nextParams = new URLSearchParams(searchParams)
+                  nextParams.delete('search')
+                  setSearchParams(nextParams)
+                }}
+                aria-label="Clear search"
+              >
+                <X size={15} />
+              </button>
+            )}
+            <button
+              type="button"
+              className="voice-search-btn-toolbar"
+              onClick={() => setVoiceOpen(true)}
+              aria-label="Voice search"
+              title="Voice search"
+            >
+              <Mic size={16} />
+            </button>
+          </form>
+
+          <div className="catalog-tools">
+            <label className="catalog-select">
+              <span>{lang === 'ta' ? 'வரிசைப்படுத்து:' : 'Sort:'}</span>
+              <select value={sort} onChange={(e) => { setPage(1); setSort(e.target.value) }}>
+                <option value="name-asc">{lang === 'ta' ? 'பெயர் (A to Z)' : 'Name (A to Z)'}</option>
+                <option value="name-desc">{lang === 'ta' ? 'பெயர் (Z to A)' : 'Name (Z to A)'}</option>
+                <option value="price-asc">{lang === 'ta' ? 'விலை: குறைந்தது முதல்' : 'Price: Low to High'}</option>
+                <option value="price-desc">{lang === 'ta' ? 'விலை: அதிகம் முதல்' : 'Price: High to Low'}</option>
+              </select>
+            </label>
+
+            <label className="catalog-select">
+              <span>{lang === 'ta' ? 'இருப்பு:' : 'Stock:'}</span>
+              <select
+                value={availability}
+                onChange={(e) => { setPage(1); setAvailability(e.target.value) }}
+              >
+                <option value="all">{lang === 'ta' ? 'அனைத்தும்' : 'All Items'}</option>
+                <option value="in-stock">{lang === 'ta' ? 'இருப்பில் உள்ளவை' : 'In Stock Only'}</option>
+              </select>
+            </label>
+
+            {(search || category !== 'All groceries' || selectedBrand !== 'All Brands' || availability !== 'all') && (
+              <button
+                type="button"
+                className="reset-filters-btn"
+                onClick={resetAllFilters}
+                title="Reset all filters"
+              >
+                <RotateCcw size={14} />
+                <span>{lang === 'ta' ? 'மீட்டமை' : 'Reset'}</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Results summary line */}
+        <div className="catalog-result-line">
+          <span>
+            {loading ? (
+              lang === 'ta' ? 'மளிகைப் பொருட்களை ஏற்றுகிறது...' : 'Loading groceries...'
+            ) : (
+              lang === 'ta' ? (
+                <>காட்டப்படும் பொருட்கள்: <strong>{displayedItems.length}</strong> (பக்கம் {result.page} / {result.totalPages})</>
+              ) : (
+                <>Found <strong>{displayedItems.length}</strong> products (Page {result.page} of {result.totalPages})</>
+              )
+            )}
+          </span>
+          {category !== 'All groceries' && (
+            <button type="button" onClick={() => chooseCategory('All groceries')}>
+              {translateCategory(category, lang)} <span>×</span>
+            </button>
+          )}
+        </div>
+
+        {/* Error message */}
+        {error && (
+          <div className="catalog-state error-message" role="alert">
+            <p>{error}</p>
+            <button className="solid-button" type="button" onClick={() => setPage(1)}>
+              {lang === 'ta' ? 'மீண்டும் முயற்சிக்கவும்' : 'Retry'}
+            </button>
+          </div>
+        )}
+
+        {/* Loading skeleton / products grid */}
+        {loading ? (
+          <div className="catalog-loading-grid">
+            {Array.from({ length: 8 }).map((_, idx) => (
+              <div key={idx} className="product-skeleton-card" />
+            ))}
+          </div>
+        ) : displayedItems.length === 0 ? (
+          <div className="catalog-state empty-state">
+            <h3>{lang === 'ta' ? 'பொருட்கள் எதுவும் கிடைக்கவில்லை' : 'No groceries match your search'}</h3>
+            <p>
+              {lang === 'ta'
+                ? 'வேறு சொல்லைத் தேடவும் அல்லது உங்கள் மளிகைப் பட்டியலை வாட்ஸ்அப்பில் அனுப்பவும்.'
+                : 'Try adjusting your filters or request the item via our village WhatsApp desk.'}
+            </p>
+            <button className="solid-button" type="button" onClick={resetAllFilters}>
+              {lang === 'ta' ? 'அனைத்து பொருட்களையும் பார்க்க' : 'View All Groceries'}
+            </button>
+          </div>
+        ) : (
+          <div className="product-grid catalog-grid">
+            {displayedItems.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onOrder={handleOrder}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {!loading && result.totalPages > 1 && (
+          <Pagination
+            page={result.page}
+            totalPages={result.totalPages}
+            total={result.total}
+            limit={result.limit}
+            onPageChange={(nextPage) => {
+              setPage(nextPage)
+              window.scrollTo({ top: 320, behavior: 'smooth' })
+            }}
+          />
+        )}
+
+        {/* Live Cart Floating Summary Bar if items are added */}
+        {itemCount > 0 && (
+          <div className="catalog-order-summary" role="region" aria-label="Cart summary">
+            <div>
+              <strong>
+                {itemCount} {lang === 'ta' ? 'பொருட்கள் கூடையில் உள்ளன' : 'items in your basket'}
+              </strong>
+              <span>
+                {lang === 'ta' ? 'மொத்த தொகை:' : 'Basket total:'}{' '}
+                <strong>{money(subtotal)}</strong> ·{' '}
+                {subtotal >= 50
+                  ? lang === 'ta' ? 'இலவச டெலிவரி!' : 'Free Delivery eligible!'
+                  : lang === 'ta' ? `இன்னும் ${money(50 - subtotal)} சேர்த்தால் இலவச டெலிவரி` : `Add ${money(50 - subtotal)} for free delivery`}
+              </span>
+            </div>
+            <Link to="/cart" className="solid-button proceed-cart-btn">
+              {lang === 'ta' ? 'கூடைக்கு செல்ல' : 'Proceed to Basket'} ({money(subtotal)}) →
+            </Link>
+          </div>
+        )}
+
+        {/* Special Village Request Card */}
+        <div className="custom-product-request">
+          <div>
+            <strong>
+              {lang === 'ta'
+                ? 'நீங்கள் தேடும் பொருள் கிடைக்கவில்லையா?'
+                : 'Looking for a specific grocery brand or item?'}
+            </strong>
+            <span>
+              {lang === 'ta'
+                ? 'எங்கள் உள்ளூர் கிராமக் கடையில் நீங்கள் கேட்கும் எந்த மளிகைப் பொருளையும் கொண்டு வந்து சேர்க்கிறோம்.'
+                : 'Send your handwritten grocery list on WhatsApp, and we will source and deliver it directly.'}
+            </span>
+          </div>
+          <a
+            href="https://wa.me/919655082236?text=Vanakkam%20Native%20Groceries%2C%20I%20need%20an%20item%20not%20listed%20on%20the%20website"
+            target="_blank"
+            rel="noreferrer"
+            className="custom-request-toggle"
+          >
+            <MessageCircle size={16} />
+            <span>{lang === 'ta' ? 'வாட்ஸ்அப்பில் கேட்க' : 'Request on WhatsApp'}</span>
+          </a>
+        </div>
+      </section>
+
+      {/* Selection Toast */}
+      {selectionNotice && (
+        <aside
+          className="product-selection-toast"
+          role="status"
+          aria-live="polite"
+        >
+          <span className="product-selection-check">
+            <Check size={18} />
+          </span>
+          <div>
+            <strong>
+              {selectionNotice.quantity} × {selectionNotice.name}
+            </strong>
+            <span>
+              {lang === 'ta' ? 'கூடையில் சேர்க்கப்பட்டது' : 'added to your basket.'}
+            </span>
+          </div>
+          <button
+            type="button"
+            aria-label="Close notification"
+            onClick={() => setSelectionNotice(null)}
+          >
+            <X size={16} />
+          </button>
+        </aside>
+      )}
+
+      {/* Voice Search Modal */}
+      {voiceOpen && (
+        <VoiceSearchModal
+          onClose={() => setVoiceOpen(false)}
+          onQuery={(query) => {
+            setSearch(query)
+            setVoiceOpen(false)
+            setPage(1)
+            const nextParams = new URLSearchParams(searchParams)
+            nextParams.set('search', query)
+            setSearchParams(nextParams)
+          }}
+        />
+      )}
     </div>
   )
 }

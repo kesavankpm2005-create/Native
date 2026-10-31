@@ -10,6 +10,7 @@ type Product = {
   stock: number
   unit: string
   price: number
+  image?: string
 }
 
 type ProductPage = {
